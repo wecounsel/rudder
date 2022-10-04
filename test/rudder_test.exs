@@ -4,7 +4,7 @@ defmodule RudderTest do
   import Mock
 
   alias RudderClient
-  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias}
+  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias, Screen}
 
   setup do
     client = Client.new(write_key: "123", data_plane_url: "https://api.example.com")
@@ -144,6 +144,42 @@ defmodule RudderTest do
               timestamp: "2022-09-24T08:25:57.589182Z"
             },
             uri: "v1/alias"
+          }),
+          1
+        )
+      end
+    end
+  end
+
+  describe "screen/2" do
+    setup(_) do
+      screen = %Screen{
+        user_id: "123",
+        name: "Screen View",
+        properties: %{},
+        timestamp: "2022-09-24T08:25:57.589182Z"
+      }
+
+      {:ok, screen: screen}
+    end
+
+    test "sends request to client", %{client: client, screen: screen} do
+      with_mock Client, send: fn _client, _identity -> {:ok, nil} end do
+        Rudder.screen(client, screen)
+
+        assert_called_exactly(
+          Client.send(client, %Rudder.Request{
+            method: :post,
+            params: %{
+              anonymousId: "",
+              context: %{library: %{name: "Rudder"}},
+              name: "Screen View",
+              integrations: %{},
+              properties: %{},
+              timestamp: "2022-09-24T08:25:57.589182Z",
+              userId: "123"
+            },
+            uri: "v1/screen"
           }),
           1
         )

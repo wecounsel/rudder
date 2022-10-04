@@ -85,6 +85,25 @@ defmodule Rudder do
     Client.send(conn, request)
   end
 
+  def screen(conn, screen) do
+    Request.check_user_id!(screen)
+
+    request = %Request{
+      uri: "v1/screen",
+      params: %{
+        userId: screen.user_id,
+        anonymousId: screen.anonymous_id,
+        context: screen.context |> Request.add_library(),
+        integrations: screen.integrations,
+        name: screen.name,
+        properties: screen.properties,
+        timestamp: screen.timestamp || Request.default_timestamp()
+      }
+    }
+
+    Client.send(conn, request)
+  end
+
   def blank?(str) do
     case str do
       nil -> true
