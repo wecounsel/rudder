@@ -53,7 +53,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#6-track)
 - [x] implement alias request
 - [x] implement screen request
 - [x] implement group request
-- [ ] implement merge request
+- [x] implement merge request
 - [ ] implement batch request
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)

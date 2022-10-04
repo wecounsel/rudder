@@ -123,6 +123,21 @@ defmodule Rudder do
     Client.send(conn, request)
   end
 
+  def merge(conn, merge) do
+    Request.check_user_id!(merge)
+
+    request = %Request{
+      uri: "v1/merge",
+      params: %{
+        userId: merge.user_id,
+        anonymousId: merge.anonymous_id,
+        mergeProperties: merge.merge_properties
+      }
+    }
+
+    Client.send(conn, request)
+  end
+
   def blank?(str) do
     case str do
       nil -> true

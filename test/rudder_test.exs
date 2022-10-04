@@ -4,7 +4,7 @@ defmodule RudderTest do
   import Mock
 
   alias RudderClient
-  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias, Screen, Group}
+  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias, Screen, Group, Merge}
 
   setup do
     client = Client.new(write_key: "123", data_plane_url: "https://api.example.com")
@@ -216,6 +216,42 @@ defmodule RudderTest do
               userId: "123"
             },
             uri: "v1/group"
+          }),
+          1
+        )
+      end
+    end
+  end
+
+  describe "merge/2" do
+    setup(_) do
+      merge = %Merge{
+        user_id: "123",
+        merge_properties: [
+          %{type: "email", value: "geralt@example.com"},
+          %{type: "mobile", value: "+15555552263"}
+        ]
+      }
+
+      {:ok, merge: merge}
+    end
+
+    test "sends request to client", %{client: client, merge: merge} do
+      with_mock Client, send: fn _client, _identity -> {:ok, nil} end do
+        Rudder.merge(client, merge)
+
+        assert_called_exactly(
+          Client.send(client, %Rudder.Request{
+            method: :post,
+            params: %{
+              anonymousId: "",
+              userId: "123",
+              mergeProperties: [
+                %{type: "email", value: "geralt@example.com"},
+                %{type: "mobile", value: "+15555552263"}
+              ]
+            },
+            uri: "v1/merge"
           }),
           1
         )
