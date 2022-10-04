@@ -49,7 +49,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#6-track)
 
 - [x] implement identify request
 - [x] implement track request
-- [ ] implement page request
+- [x] implement page request
 - [ ] implement alias request
 - [ ] implement screen request
 - [ ] implement group request

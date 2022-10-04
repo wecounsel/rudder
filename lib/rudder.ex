@@ -47,6 +47,25 @@ defmodule Rudder do
     Client.send(conn, request)
   end
 
+  def page(conn, page) do
+    Request.check_user_id!(page)
+
+    request = %Request{
+      uri: "v1/page",
+      params: %{
+        userId: page.user_id,
+        anonymousId: page.anonymous_id,
+        context: page.context |> Request.add_library(),
+        integrations: page.integrations,
+        name: page.name,
+        properties: page.properties,
+        timestamp: page.timestamp || Request.default_timestamp()
+      }
+    }
+
+    Client.send(conn, request)
+  end
+
   def blank?(str) do
     case str do
       nil -> true
