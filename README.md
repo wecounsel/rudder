@@ -52,7 +52,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#6-track)
 - [x] implement page request
 - [x] implement alias request
 - [x] implement screen request
-- [ ] implement group request
+- [x] implement group request
 - [ ] implement merge request
 - [ ] implement batch request
 

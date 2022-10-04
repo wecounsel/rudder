@@ -104,6 +104,25 @@ defmodule Rudder do
     Client.send(conn, request)
   end
 
+  def group(conn, group) do
+    Request.check_user_id!(group)
+
+    request = %Request{
+      uri: "v1/group",
+      params: %{
+        userId: group.user_id,
+        anonymousId: group.anonymous_id,
+        context: group.context |> Request.add_library(),
+        integrations: group.integrations,
+        groupId: group.group_id,
+        traits: group.traits,
+        timestamp: group.timestamp || Request.default_timestamp()
+      }
+    }
+
+    Client.send(conn, request)
+  end
+
   def blank?(str) do
     case str do
       nil -> true

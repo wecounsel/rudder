@@ -4,7 +4,7 @@ defmodule RudderTest do
   import Mock
 
   alias RudderClient
-  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias, Screen}
+  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias, Screen, Group}
 
   setup do
     client = Client.new(write_key: "123", data_plane_url: "https://api.example.com")
@@ -180,6 +180,42 @@ defmodule RudderTest do
               userId: "123"
             },
             uri: "v1/screen"
+          }),
+          1
+        )
+      end
+    end
+  end
+
+  describe "group/2" do
+    setup(_) do
+      group = %Group{
+        user_id: "123",
+        group_id: "group1",
+        traits: %{name: "Company", industry: "Industry", employees: 123},
+        timestamp: "2022-09-24T08:25:57.589182Z"
+      }
+
+      {:ok, group: group}
+    end
+
+    test "sends request to client", %{client: client, group: group} do
+      with_mock Client, send: fn _client, _identity -> {:ok, nil} end do
+        Rudder.group(client, group)
+
+        assert_called_exactly(
+          Client.send(client, %Rudder.Request{
+            method: :post,
+            params: %{
+              anonymousId: "",
+              context: %{library: %{name: "Rudder"}},
+              groupId: "group1",
+              integrations: %{},
+              traits: %{name: "Company", industry: "Industry", employees: 123},
+              timestamp: "2022-09-24T08:25:57.589182Z",
+              userId: "123"
+            },
+            uri: "v1/group"
           }),
           1
         )
