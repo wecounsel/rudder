@@ -1,11 +1,12 @@
 defmodule Rudder.Alias do
   @moduledoc """
-  Alias 
+  Alias
   """
   defstruct user_id: "",
             previous_id: "",
             context: %{},
             integrations: %{},
             timestamp: nil,
-            properties: %{}
+            properties: %{},
+            traits: %{}
 end

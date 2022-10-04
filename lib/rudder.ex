@@ -66,6 +66,25 @@ defmodule Rudder do
     Client.send(conn, request)
   end
 
+  def alias(conn, user_alias) do
+    Request.check_user_id!(user_alias)
+
+    request = %Request{
+      uri: "v1/alias",
+      params: %{
+        userId: user_alias.user_id,
+        previousId: user_alias.previous_id,
+        context: user_alias.context |> Request.add_library(),
+        integrations: user_alias.integrations,
+        properties: user_alias.properties,
+        traits: user_alias.traits,
+        timestamp: user_alias.timestamp || Request.default_timestamp()
+      }
+    }
+
+    Client.send(conn, request)
+  end
+
   def blank?(str) do
     case str do
       nil -> true

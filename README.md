@@ -50,7 +50,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#6-track)
 - [x] implement identify request
 - [x] implement track request
 - [x] implement page request
-- [ ] implement alias request
+- [x] implement alias request
 - [ ] implement screen request
 - [ ] implement group request
 - [ ] implement merge request
