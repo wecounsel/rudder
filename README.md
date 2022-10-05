@@ -54,7 +54,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#6-track)
 - [x] implement screen request
 - [x] implement group request
 - [x] implement merge request
-- [ ] implement batch request
+- [x] implement batch request
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
