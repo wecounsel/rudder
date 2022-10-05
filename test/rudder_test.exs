@@ -4,7 +4,20 @@ defmodule RudderTest do
   import Mock
 
   alias RudderClient
-  alias Rudder.{Client, Identity, Request, Event, Result, Page, Alias, Screen, Group, Merge}
+
+  alias Rudder.{
+    Client,
+    Identity,
+    Request,
+    Event,
+    Result,
+    Page,
+    Alias,
+    Screen,
+    Group,
+    Merge,
+    Batch
+  }
 
   setup do
     client = Client.new(write_key: "123", data_plane_url: "https://api.example.com")
@@ -255,6 +268,108 @@ defmodule RudderTest do
           }),
           1
         )
+      end
+    end
+  end
+
+  describe "batch/2" do
+    setup(_) do
+      batch = %Batch{
+        items: [
+          %Identity{
+            user_id: "123",
+            timestamp: "2022-09-24T08:25:57.589182Z"
+          },
+          %Event{
+            user_id: "123",
+            name: "Item sold",
+            properties: %{price: 2.33},
+            timestamp: "2022-09-24T08:25:57.589182Z"
+          },
+          %Page{
+            user_id: "123",
+            name: "Page View",
+            properties: %{title: "Home", path: "/"},
+            timestamp: "2022-09-24T08:25:57.589182Z"
+          }
+        ]
+      }
+
+      {:ok, batch: batch}
+    end
+
+    test "sends request to client", %{client: client, batch: batch} do
+      with_mock Client, send: fn _client, _identity -> {:ok, nil} end do
+        Rudder.batch(client, batch)
+
+        assert_called_exactly(
+          Client.send(client, %Rudder.Request{
+            method: :post,
+            params: %{
+              batch: [
+                %{
+                  type: "identify",
+                  userId: "123",
+                  anonymousId: "",
+                  context: %{library: %{name: "Rudder"}},
+                  integrations: %{},
+                  timestamp: "2022-09-24T08:25:57.589182Z",
+                  traits: %{}
+                },
+                %{
+                  type: "track",
+                  anonymousId: "",
+                  context: %{library: %{name: "Rudder"}},
+                  event: "Item sold",
+                  integrations: %{},
+                  properties: %{price: 2.33},
+                  timestamp: "2022-09-24T08:25:57.589182Z",
+                  userId: "123"
+                },
+                %{
+                  type: "page",
+                  anonymousId: "",
+                  context: %{library: %{name: "Rudder"}},
+                  name: "Page View",
+                  integrations: %{},
+                  properties: %{title: "Home", path: "/"},
+                  timestamp: "2022-09-24T08:25:57.589182Z",
+                  userId: "123"
+                }
+              ]
+            },
+            uri: "v1/batch"
+          }),
+          1
+        )
+      end
+    end
+  end
+
+  describe "batch/2 with invalid type" do
+    setup(_) do
+      batch = %Batch{
+        items: [
+          # Alias is not a valid type for batch
+          %Alias{
+            user_id: "123",
+            previous_id: "456",
+            properties: %{some: "value"},
+            timestamp: "2022-09-24T08:25:57.589182Z"
+          }
+        ]
+      }
+
+      {:ok, batch: batch}
+    end
+
+    test "raises an error", %{client: client, batch: batch} do
+      with_mock Client, send: fn _client, _identity -> {:ok, nil} end do
+        assert_raise ArgumentError,
+                     "Batch item type not suppported: \"alias\"",
+                     fn -> Rudder.batch(client, batch) end
+
+        assert_not_called(Client.send(:_))
       end
     end
   end

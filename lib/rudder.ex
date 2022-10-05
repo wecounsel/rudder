@@ -2,7 +2,7 @@ defmodule Rudder do
   @moduledoc """
   Documentation for `Rudder`.
   """
-  alias Rudder.{Request, Client}
+  alias Rudder.{Request, Client, Identity, Event, Page, Group, Alias, Screen, Merge, Batch}
 
   @doc """
   Sends an identity request to the RudderStack data plane
@@ -12,14 +12,7 @@ defmodule Rudder do
 
     request = %Request{
       uri: "v1/identify",
-      params: %{
-        userId: identity.user_id,
-        anonymousId: identity.anonymous_id,
-        context: identity.context |> Request.add_library(),
-        integrations: identity.integrations,
-        timestamp: identity.timestamp || Request.default_timestamp(),
-        traits: identity.traits
-      }
+      params: Rudder.Identity.build_params(identity)
     }
 
     Client.send(conn, request)
@@ -33,97 +26,72 @@ defmodule Rudder do
 
     request = %Request{
       uri: "v1/track",
-      params: %{
-        userId: event.user_id,
-        anonymousId: event.anonymous_id,
-        event: event.name,
-        properties: event.properties,
-        integrations: event.integrations,
-        timestamp: event.timestamp || Request.default_timestamp(),
-        context: event.context |> Request.add_library()
-      }
+      params: Rudder.Event.build_params(event)
     }
 
     Client.send(conn, request)
   end
 
+  @doc """
+  Sends a page request to the RudderStack data plane
+  """
   def page(conn, page) do
     Request.check_user_id!(page)
 
     request = %Request{
       uri: "v1/page",
-      params: %{
-        userId: page.user_id,
-        anonymousId: page.anonymous_id,
-        context: page.context |> Request.add_library(),
-        integrations: page.integrations,
-        name: page.name,
-        properties: page.properties,
-        timestamp: page.timestamp || Request.default_timestamp()
-      }
+      params: Rudder.Page.build_params(page)
     }
 
     Client.send(conn, request)
   end
 
-  def alias(conn, user_alias) do
+  @doc """
+  Sends an alias request to the RudderStack data plane
+  """
+  def alias(conn, %Alias{} = user_alias) do
     Request.check_user_id!(user_alias)
 
     request = %Request{
       uri: "v1/alias",
-      params: %{
-        userId: user_alias.user_id,
-        previousId: user_alias.previous_id,
-        context: user_alias.context |> Request.add_library(),
-        integrations: user_alias.integrations,
-        properties: user_alias.properties,
-        traits: user_alias.traits,
-        timestamp: user_alias.timestamp || Request.default_timestamp()
-      }
+      params: Rudder.Alias.build_params(user_alias)
     }
 
     Client.send(conn, request)
   end
 
-  def screen(conn, screen) do
+  @doc """
+  Sends a screen request to the RudderStack data plane
+  """
+  def screen(conn, %Screen{} = screen) do
     Request.check_user_id!(screen)
 
     request = %Request{
       uri: "v1/screen",
-      params: %{
-        userId: screen.user_id,
-        anonymousId: screen.anonymous_id,
-        context: screen.context |> Request.add_library(),
-        integrations: screen.integrations,
-        name: screen.name,
-        properties: screen.properties,
-        timestamp: screen.timestamp || Request.default_timestamp()
-      }
+      params: Rudder.Screen.build_params(screen)
     }
 
     Client.send(conn, request)
   end
 
-  def group(conn, group) do
+  @doc """
+  Sends a group request to the RudderStack data plane
+  """
+  def group(conn, %Group{} = group) do
     Request.check_user_id!(group)
 
     request = %Request{
       uri: "v1/group",
-      params: %{
-        userId: group.user_id,
-        anonymousId: group.anonymous_id,
-        context: group.context |> Request.add_library(),
-        integrations: group.integrations,
-        groupId: group.group_id,
-        traits: group.traits,
-        timestamp: group.timestamp || Request.default_timestamp()
-      }
+      params: Rudder.Group.build_params(group)
     }
 
     Client.send(conn, request)
   end
 
-  def merge(conn, merge) do
+  @doc """
+  Sends a merge request to the RudderStack data plane
+  """
+  def merge(conn, %Merge{} = merge) do
     Request.check_user_id!(merge)
 
     request = %Request{
@@ -138,6 +106,26 @@ defmodule Rudder do
     Client.send(conn, request)
   end
 
+  @doc """
+  Sends a batch request to the RudderStack data plane
+  """
+  def batch(conn, %Batch{} = batch) do
+    validate_batch_items!(batch.items)
+
+    batch_items =
+      batch.items
+      |> Enum.map(&batch_item_params/1)
+
+    request = %Request{
+      uri: "v1/batch",
+      params: %{
+        batch: batch_items
+      }
+    }
+
+    Client.send(conn, request)
+  end
+
   def blank?(str) do
     case str do
       nil -> true
@@ -145,5 +133,29 @@ defmodule Rudder do
       " " <> r -> blank?(r)
       _ -> false
     end
+  end
+
+  defp batch_item_params(%Identity{} = batch_item),
+    do: Rudder.Identity.build_params(batch_item)
+
+  defp batch_item_params(%Event{} = batch_item),
+    do: Rudder.Event.build_params(batch_item)
+
+  defp batch_item_params(%Page{} = batch_item),
+    do: Rudder.Page.build_params(batch_item)
+
+  defp batch_item_params(%Group{} = batch_item),
+    do: Rudder.Event.build_params(batch_item)
+
+  defp batch_item_params(%{type: type}),
+    do: raise(ArgumentError, message: "Batch item type not suppported: #{inspect(type)}")
+
+  defp validate_batch_items!(items) do
+    :ok =
+      items
+      |> Enum.each(fn item ->
+        Request.check_user_id!(item)
+        Request.check_batch_type!(item)
+      end)
   end
 end

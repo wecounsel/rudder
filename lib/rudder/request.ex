@@ -17,4 +17,10 @@ defmodule Rudder.Request do
       raise ArgumentError, message: "You must supply either a user_id or an anonymous_id"
     end
   end
+
+  def check_batch_type!(batch_item) do
+    if Rudder.blank?(batch_item.type) do
+      raise ArgumentError, message: "Batch items must specify a type"
+    end
+  end
 end
