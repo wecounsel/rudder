@@ -72,7 +72,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#8-screen)
 ## Group
 
 ```elixir
-Rudder.group(client, %Rudder,group{
+Rudder.group(client, %Rudder.group{
   user_id: "123",
   group_id: "group-a",
   traits: %{
