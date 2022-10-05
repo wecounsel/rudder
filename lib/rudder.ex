@@ -2,17 +2,29 @@ defmodule Rudder do
   @moduledoc """
   Documentation for `Rudder`.
   """
-  alias Rudder.{Request, Client, Identity, Event, Page, Group, Alias, Screen, Merge, Batch}
+  alias Rudder.{
+    Request,
+    Client,
+    Identity,
+    Event,
+    Page,
+    Group,
+    Alias,
+    Screen,
+    Merge,
+    Batch,
+    Sendable
+  }
 
   @doc """
   Sends an identity request to the RudderStack data plane
   """
-  def identify(conn, identity) do
+  def identify(conn, %Identity{} = identity) do
     Request.check_user_id!(identity)
 
     request = %Request{
       uri: "v1/identify",
-      params: Rudder.Identity.build_params(identity)
+      params: Sendable.map_parameters(identity)
     }
 
     Client.send(conn, request)
@@ -21,12 +33,12 @@ defmodule Rudder do
   @doc """
   Sends an event request to the RudderStack data plane
   """
-  def track(conn, event) do
+  def track(conn, %Event{} = event) do
     Request.check_user_id!(event)
 
     request = %Request{
       uri: "v1/track",
-      params: Rudder.Event.build_params(event)
+      params: Sendable.map_parameters(event)
     }
 
     Client.send(conn, request)
@@ -35,12 +47,12 @@ defmodule Rudder do
   @doc """
   Sends a page request to the RudderStack data plane
   """
-  def page(conn, page) do
+  def page(conn, %Page{} = page) do
     Request.check_user_id!(page)
 
     request = %Request{
       uri: "v1/page",
-      params: Rudder.Page.build_params(page)
+      params: Sendable.map_parameters(page)
     }
 
     Client.send(conn, request)
@@ -54,7 +66,7 @@ defmodule Rudder do
 
     request = %Request{
       uri: "v1/alias",
-      params: Rudder.Alias.build_params(user_alias)
+      params: Sendable.map_parameters(user_alias)
     }
 
     Client.send(conn, request)
@@ -68,7 +80,7 @@ defmodule Rudder do
 
     request = %Request{
       uri: "v1/screen",
-      params: Rudder.Screen.build_params(screen)
+      params: Sendable.map_parameters(screen)
     }
 
     Client.send(conn, request)
@@ -82,7 +94,7 @@ defmodule Rudder do
 
     request = %Request{
       uri: "v1/group",
-      params: Rudder.Group.build_params(group)
+      params: Sendable.map_parameters(group)
     }
 
     Client.send(conn, request)
@@ -96,11 +108,7 @@ defmodule Rudder do
 
     request = %Request{
       uri: "v1/merge",
-      params: %{
-        userId: merge.user_id,
-        anonymousId: merge.anonymous_id,
-        mergeProperties: merge.merge_properties
-      }
+      params: Sendable.map_parameters(merge)
     }
 
     Client.send(conn, request)
@@ -112,15 +120,9 @@ defmodule Rudder do
   def batch(conn, %Batch{} = batch) do
     validate_batch_items!(batch.items)
 
-    batch_items =
-      batch.items
-      |> Enum.map(&batch_item_params/1)
-
     request = %Request{
       uri: "v1/batch",
-      params: %{
-        batch: batch_items
-      }
+      params: Sendable.map_parameters(batch)
     }
 
     Client.send(conn, request)
@@ -134,21 +136,6 @@ defmodule Rudder do
       _ -> false
     end
   end
-
-  defp batch_item_params(%Identity{} = batch_item),
-    do: Rudder.Identity.build_params(batch_item)
-
-  defp batch_item_params(%Event{} = batch_item),
-    do: Rudder.Event.build_params(batch_item)
-
-  defp batch_item_params(%Page{} = batch_item),
-    do: Rudder.Page.build_params(batch_item)
-
-  defp batch_item_params(%Group{} = batch_item),
-    do: Rudder.Event.build_params(batch_item)
-
-  defp batch_item_params(%{type: type}),
-    do: raise(ArgumentError, message: "Batch item type not suppported: #{inspect(type)}")
 
   defp validate_batch_items!(items) do
     :ok =

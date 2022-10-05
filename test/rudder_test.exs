@@ -39,7 +39,7 @@ defmodule RudderTest do
         Rudder.identify(client, identity)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               anonymousId: "",
@@ -74,7 +74,7 @@ defmodule RudderTest do
         Rudder.track(client, event)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               anonymousId: "",
@@ -110,7 +110,7 @@ defmodule RudderTest do
         Rudder.page(client, page)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               anonymousId: "",
@@ -146,7 +146,7 @@ defmodule RudderTest do
         Rudder.alias(client, user_alias)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               context: %{library: %{name: "Rudder"}},
@@ -181,7 +181,7 @@ defmodule RudderTest do
         Rudder.screen(client, screen)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               anonymousId: "",
@@ -217,7 +217,7 @@ defmodule RudderTest do
         Rudder.group(client, group)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               anonymousId: "",
@@ -254,7 +254,7 @@ defmodule RudderTest do
         Rudder.merge(client, merge)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               anonymousId: "",
@@ -303,7 +303,7 @@ defmodule RudderTest do
         Rudder.batch(client, batch)
 
         assert_called_exactly(
-          Client.send(client, %Rudder.Request{
+          Client.send(client, %Request{
             method: :post,
             params: %{
               batch: [
@@ -366,7 +366,7 @@ defmodule RudderTest do
     test "raises an error", %{client: client, batch: batch} do
       with_mock Client, send: fn _client, _identity -> {:ok, nil} end do
         assert_raise ArgumentError,
-                     "Batch item type not suppported: \"alias\"",
+                     "Batch item type not supported: \"alias\"",
                      fn -> Rudder.batch(client, batch) end
 
         assert_not_called(Client.send(:_))

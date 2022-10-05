@@ -3,7 +3,7 @@ defmodule Rudder.Event do
   Event struct for making `track` calls
   """
 
-  alias Rudder.Request
+  alias Rudder.{Event, Request}
 
   # type is needed for batch support.
   defstruct type: "track",
@@ -15,16 +15,18 @@ defmodule Rudder.Event do
             timestamp: nil,
             properties: %{}
 
-  def build_params(params) do
-    %{
-      type: __MODULE__.__struct__().type,
-      userId: params.user_id,
-      anonymousId: params.anonymous_id,
-      event: params.name,
-      context: params.context |> Request.add_library(),
-      integrations: params.integrations,
-      timestamp: params.timestamp || Request.default_timestamp(),
-      properties: params.properties
-    }
+  defimpl Rudder.Sendable do
+    def map_parameters(struct) do
+      %{
+        type: Event.__struct__().type,
+        userId: struct.user_id,
+        anonymousId: struct.anonymous_id,
+        event: struct.name,
+        context: struct.context |> Request.add_library(),
+        integrations: struct.integrations,
+        timestamp: struct.timestamp || Request.default_timestamp(),
+        properties: struct.properties
+      }
+    end
   end
 end

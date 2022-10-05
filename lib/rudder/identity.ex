@@ -3,7 +3,7 @@ defmodule Rudder.Identity do
   Identity struct for making `identify` calls
   """
 
-  alias Rudder.Request
+  alias Rudder.{Identity, Request}
 
   # type is needed for batch support.
   defstruct type: "identify",
@@ -14,15 +14,17 @@ defmodule Rudder.Identity do
             timestamp: nil,
             traits: %{}
 
-  def build_params(params) do
-    %{
-      type: __MODULE__.__struct__().type,
-      userId: params.user_id,
-      anonymousId: params.anonymous_id,
-      context: params.context |> Request.add_library(),
-      integrations: params.integrations,
-      timestamp: params.timestamp || Request.default_timestamp(),
-      traits: params.traits
-    }
+  defimpl Rudder.Sendable do
+    def map_parameters(struct) do
+      %{
+        type: Identity.__struct__().type,
+        userId: struct.user_id,
+        anonymousId: struct.anonymous_id,
+        context: struct.context |> Request.add_library(),
+        integrations: struct.integrations,
+        timestamp: struct.timestamp || Request.default_timestamp(),
+        traits: struct.traits
+      }
+    end
   end
 end

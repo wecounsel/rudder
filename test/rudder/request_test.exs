@@ -3,7 +3,7 @@ defmodule Rudder.RequestTest do
   doctest Rudder
 
   alias RudderClient
-  alias Rudder.{Client, Identity, Request, Event, Result}
+  alias Rudder.{Identity, Request}
 
   describe "check_user_id!/1" do
     test "raises an exeception if not provided a user_id or anonymous_id" do

@@ -22,5 +22,14 @@ defmodule Rudder.Request do
     if Rudder.blank?(batch_item.type) do
       raise ArgumentError, message: "Batch items must specify a type"
     end
+
+    unless valid_batch_item_type?(batch_item) do
+      raise ArgumentError, message: "Batch item type not supported: #{inspect(batch_item.type)}"
+    end
   end
+
+  @valid_batch_types ["identify", "track", "page", "group", "screen"]
+
+  defp valid_batch_item_type?(batch_item) when batch_item.type in @valid_batch_types, do: true
+  defp valid_batch_item_type?(_), do: false
 end

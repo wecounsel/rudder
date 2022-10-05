@@ -3,7 +3,7 @@ defmodule Rudder.Group do
   Group struct for making `group` calls
   """
 
-  alias Rudder.Request
+  alias Rudder.{Group, Request}
 
   # type is needed for batch support.
   defstruct type: "group",
@@ -15,16 +15,18 @@ defmodule Rudder.Group do
             traits: %{},
             timestamp: nil
 
-  def build_params(params) do
-    %{
-      type: __MODULE__.__struct__().type,
-      userId: params.user_id,
-      anonymousId: params.anonymous_id,
-      context: params.context |> Request.add_library(),
-      integrations: params.integrations,
-      groupId: params.group_id,
-      traits: params.traits,
-      timestamp: params.timestamp || Request.default_timestamp()
-    }
+  defimpl Rudder.Sendable do
+    def map_parameters(struct) do
+      %{
+        type: Group.__struct__().type,
+        userId: struct.user_id,
+        anonymousId: struct.anonymous_id,
+        context: struct.context |> Request.add_library(),
+        integrations: struct.integrations,
+        groupId: struct.group_id,
+        traits: struct.traits,
+        timestamp: struct.timestamp || Request.default_timestamp()
+      }
+    end
   end
 end

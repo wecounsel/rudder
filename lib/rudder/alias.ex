@@ -3,7 +3,7 @@ defmodule Rudder.Alias do
   Alias struct for making `alias` calls
   """
 
-  alias Rudder.Request
+  alias Rudder.{Alias, Request}
 
   # type is needed for batch support.
   defstruct type: "alias",
@@ -15,16 +15,18 @@ defmodule Rudder.Alias do
             properties: %{},
             traits: %{}
 
-  def build_params(params) do
-    %{
-      type: __MODULE__.__struct__().type,
-      userId: params.user_id,
-      previousId: params.previous_id,
-      context: params.context |> Request.add_library(),
-      integrations: params.integrations,
-      timestamp: params.timestamp || Request.default_timestamp(),
-      properties: params.properties,
-      traits: params.traits
-    }
+  defimpl Rudder.Sendable do
+    def map_parameters(struct) do
+      %{
+        type: Alias.__struct__().type,
+        userId: struct.user_id,
+        previousId: struct.previous_id,
+        context: struct.context |> Request.add_library(),
+        integrations: struct.integrations,
+        timestamp: struct.timestamp || Request.default_timestamp(),
+        properties: struct.properties,
+        traits: struct.traits
+      }
+    end
   end
 end
