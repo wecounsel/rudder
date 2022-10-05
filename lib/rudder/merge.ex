@@ -1,6 +1,6 @@
 defmodule Rudder.Merge do
   @moduledoc """
-  Merge
+  Merge struct for making `merge` calls
   """
 
   defstruct user_id: "",

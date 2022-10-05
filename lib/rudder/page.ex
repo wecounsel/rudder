@@ -1,6 +1,6 @@
 defmodule Rudder.Page do
   @moduledoc """
-  Page
+  Page struct for making `page` calls
   """
 
   alias Rudder.Request

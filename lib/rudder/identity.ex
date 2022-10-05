@@ -1,6 +1,6 @@
 defmodule Rudder.Identity do
   @moduledoc """
-  Identity
+  Identity struct for making `identify` calls
   """
 
   alias Rudder.Request

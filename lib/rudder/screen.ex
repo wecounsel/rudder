@@ -1,6 +1,6 @@
 defmodule Rudder.Screen do
   @moduledoc """
-  Screen
+  Screen struct for making `screen` calls
   """
 
   alias Rudder.Request

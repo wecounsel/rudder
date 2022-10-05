@@ -1,6 +1,6 @@
 defmodule Rudder.Alias do
   @moduledoc """
-  Alias
+  Alias struct for making `alias` calls
   """
 
   alias Rudder.Request

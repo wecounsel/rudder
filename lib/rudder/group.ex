@@ -1,6 +1,6 @@
 defmodule Rudder.Group do
   @moduledoc """
-  Group
+  Group struct for making `group` calls
   """
 
   alias Rudder.Request

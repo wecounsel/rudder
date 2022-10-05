@@ -1,6 +1,6 @@
 defmodule Rudder.Event do
   @moduledoc """
-  Event
+  Event struct for making `track` calls
   """
 
   alias Rudder.Request
