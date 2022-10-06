@@ -1,0 +1,65 @@
+
+name: Verify
+on: pull_request
+jobs:
+  core_dependencies:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        elixir: ["1.13.4"]
+        otp: ["25"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Retrieve Cached Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            deps
+            _build
+        id: mix-cache
+          key: ${{ runner.os }}-ubuntu-latest-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
+
+      - name: Install dependencies
+        if: steps.mix-cache.outputs.cache-hit != 'true'
+        env:
+          MIX_ENV: test
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+          mix deps.compile
+  tests:
+    runs-on: ubuntu-latest
+    needs: core_dependencies
+    strategy:
+      matrix:
+        elixir: ["1.13.4"]
+        otp: ["25"]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Retrieve Cached Dependencies
+        uses: actions/cache@v2
+        id: mix-cache
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-ubuntu-latest-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
+
+      - name: Run tests
+        env:
+          MIX_ENV: test
+        run: mix test --trace --slowest 10
