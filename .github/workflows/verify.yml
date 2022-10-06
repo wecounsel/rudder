@@ -18,11 +18,11 @@ jobs:
 
       - name: Retrieve Cached Dependencies
         uses: actions/cache@v2
+        id: mix-cache
         with:
           path: |
             deps
             _build
-        id: mix-cache
           key: ${{ runner.os }}-ubuntu-latest-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
 
       - name: Install dependencies
