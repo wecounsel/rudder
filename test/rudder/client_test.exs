@@ -59,16 +59,18 @@ defmodule Rudder.ClientTest do
       request: request
     } do
       with_mock HTTPoison,
-        post: fn _url, _body, _options ->
+        post: fn _url, _body, _headers, _options ->
           {:ok, %HTTPoison.Response{status_code: 200, body: ""}}
         end do
         assert Client.send(client, request) == {:ok, %Result{success: true}}
 
         assert_called_exactly(
-          HTTPoison.post("https://api.example.com/v1/track", Jason.encode(request.params), [
-            {"Content-Type", "application/json"},
-            {:hackney, [basic_auth: {client.write_key, ""}]}
-          ]),
+          HTTPoison.post(
+            "https://api.example.com/v1/track",
+            Jason.encode!(request.params),
+            [{"Content-Type", "application/json"}],
+            hackney: [basic_auth: {client.write_key, ""}]
+          ),
           1
         )
       end
@@ -79,13 +81,13 @@ defmodule Rudder.ClientTest do
       request: request
     } do
       with_mock HTTPoison,
-        post: fn _url, _body, _options ->
+        post: fn _url, _body, _headers, _options ->
           {:error, %HTTPoison.Error{reason: "Bad request"}}
         end do
         assert Client.send(client, request) == {:error, %Result{success: false}}
 
         assert_called_exactly(
-          HTTPoison.post(:_, :_, :_),
+          HTTPoison.post(:_, :_, :_, :_),
           1
         )
       end
@@ -96,13 +98,13 @@ defmodule Rudder.ClientTest do
       request: request
     } do
       with_mock HTTPoison,
-        post: fn _url, _body, _options ->
+        post: fn _url, _body, _headers, _options ->
           {:ok, %HTTPoison.Response{status_code: 400}}
         end do
         assert Client.send(client, request) == {:error, %Result{success: false}}
 
         assert_called_exactly(
-          HTTPoison.post(:_, :_, :_),
+          HTTPoison.post(:_, :_, :_, :_),
           1
         )
       end
