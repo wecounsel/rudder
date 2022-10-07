@@ -14,6 +14,17 @@ defmodule Rudder.Screen do
             timestamp: nil,
             properties: %{}
 
+  @type t :: %__MODULE__{
+          type: String.t(),
+          user_id: String.t(),
+          anonymous_id: String.t(),
+          name: String.t(),
+          context: Map.t(),
+          integrations: Map.t(),
+          timestamp: String.t() | nil,
+          properties: Map.t()
+        }
+
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{

@@ -15,6 +15,17 @@ defmodule Rudder.Alias do
             properties: %{},
             traits: %{}
 
+  @type t :: %Alias{
+          type: String.t(),
+          user_id: String.t(),
+          previous_id: String.t(),
+          context: Map.t(),
+          integrations: Map.t(),
+          timestamp: String.t() | nil,
+          properties: Map.t(),
+          traits: Map.t()
+        }
+
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{

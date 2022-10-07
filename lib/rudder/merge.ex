@@ -7,6 +7,12 @@ defmodule Rudder.Merge do
             anonymous_id: "",
             merge_properties: []
 
+  @type t :: %__MODULE__{
+          user_id: String.t(),
+          anonymous_id: String.t(),
+          merge_properties: List.t()
+        }
+
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{

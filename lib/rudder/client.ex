@@ -8,6 +8,8 @@ defmodule Rudder.Client do
 
   defstruct write_key: "", data_plane_url: ""
 
+  @type t :: %__MODULE__{write_key: String.t(), data_plane_url: String.t()}
+
   def new(data_plane_url: _data_plane_url) do
     raise ArgumentError, "write_key is required"
   end

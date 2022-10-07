@@ -5,6 +5,8 @@ defmodule Rudder.Batch do
 
   defstruct items: []
 
+  @type t :: %__MODULE__{items: List.t()}
+
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{

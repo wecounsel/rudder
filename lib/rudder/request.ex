@@ -4,6 +4,12 @@ defmodule Rudder.Request do
   """
   defstruct uri: "", params: "", method: :post
 
+  @type t :: %__MODULE__{
+          uri: String.t(),
+          params: String.t(),
+          method: atom()
+        }
+
   def add_library(context) when is_map(context) do
     Map.put(context, :library, %{name: "Rudder"})
   end

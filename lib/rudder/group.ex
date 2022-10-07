@@ -15,6 +15,17 @@ defmodule Rudder.Group do
             traits: %{},
             timestamp: nil
 
+  @type t :: %__MODULE__{
+          type: String.t(),
+          user_id: String.t(),
+          anonymous_id: String.t(),
+          context: Map.t(),
+          integrations: Map.t(),
+          group_id: String.t(),
+          traits: Map.t(),
+          timestamp: String.t() | nil
+        }
+
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{

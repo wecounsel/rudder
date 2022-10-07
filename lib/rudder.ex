@@ -13,12 +13,16 @@ defmodule Rudder do
     Screen,
     Merge,
     Batch,
-    Sendable
+    Sendable,
+    Result
   }
+
+  @type response() :: {:ok | :error, Result.t()}
 
   @doc """
   Sends an identity request to the RudderStack data plane
   """
+  @spec identify(Client.t(), Identity.t()) :: response()
   def identify(client, %Identity{} = identity) do
     Request.check_user_id!(identity)
 
@@ -33,6 +37,7 @@ defmodule Rudder do
   @doc """
   Sends an event request to the RudderStack data plane
   """
+  @spec track(Client.t(), Event.t()) :: response()
   def track(client, %Event{} = event) do
     Request.check_user_id!(event)
 
@@ -47,6 +52,7 @@ defmodule Rudder do
   @doc """
   Sends a page request to the RudderStack data plane
   """
+  @spec page(Client.t(), Page.t()) :: response()
   def page(client, %Page{} = page) do
     Request.check_user_id!(page)
 
@@ -61,6 +67,7 @@ defmodule Rudder do
   @doc """
   Sends an alias request to the RudderStack data plane
   """
+  @spec alias(Client.t(), Alias.t()) :: response()
   def alias(client, %Alias{} = user_alias) do
     Request.check_user_id!(user_alias)
 
@@ -75,6 +82,7 @@ defmodule Rudder do
   @doc """
   Sends a screen request to the RudderStack data plane
   """
+  @spec screen(Client.t(), Screen.t()) :: response()
   def screen(client, %Screen{} = screen) do
     Request.check_user_id!(screen)
 
@@ -89,6 +97,7 @@ defmodule Rudder do
   @doc """
   Sends a group request to the RudderStack data plane
   """
+  @spec group(Client.t(), Group.t()) :: response()
   def group(client, %Group{} = group) do
     Request.check_user_id!(group)
 
@@ -103,6 +112,7 @@ defmodule Rudder do
   @doc """
   Sends a merge request to the RudderStack data plane
   """
+  @spec merge(Client.t(), Merge.t()) :: response()
   def merge(client, %Merge{} = merge) do
     Request.check_user_id!(merge)
 
@@ -117,6 +127,7 @@ defmodule Rudder do
   @doc """
   Sends a batch request to the RudderStack data plane
   """
+  @spec batch(Client.t(), Batch.t()) :: response()
   def batch(client, %Batch{} = batch) do
     validate_batch_items!(batch.items)
 
@@ -128,14 +139,12 @@ defmodule Rudder do
     Client.send(client, request)
   end
 
-  def blank?(str) do
-    case str do
-      nil -> true
-      "" -> true
-      " " <> r -> blank?(r)
-      _ -> false
-    end
-  end
+  @doc """
+  Check if a given string is nil, empty, or only whitespace
+  """
+  @spec blank?(String.t()) :: boolean()
+  def blank?(nil), do: true
+  def blank?(str), do: String.trim(str) == ""
 
   defp validate_batch_items!(items) do
     :ok =

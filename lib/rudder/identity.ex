@@ -9,10 +9,20 @@ defmodule Rudder.Identity do
   defstruct type: "identify",
             user_id: "",
             anonymous_id: "",
-            context: %{library: %{name: "Rudder"}},
+            context: %{},
             integrations: %{},
             timestamp: nil,
             traits: %{}
+
+  @type t :: %__MODULE__{
+          type: String.t(),
+          user_id: String.t(),
+          anonymous_id: String.t(),
+          context: Map.t(),
+          integrations: Map.t(),
+          timestamp: String.t() | nil,
+          traits: Map.t()
+        }
 
   defimpl Rudder.Sendable do
     def map_parameters(struct) do

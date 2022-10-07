@@ -10,8 +10,21 @@ defmodule Rudder.MixProject do
       version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
+      package: package(),
       deps: deps(),
       docs: docs()
+    ]
+  end
+
+  def package do
+    [
+      description: "Elixir package for interacting with RudderStack HTTP API",
+      maintainers: ["Thomas Brewer", "Jason Soares"],
+      contributers: ["Thomas Brewer", "Jason Soares"],
+      licenses: ["MIT"],
+      links: %{
+        GitHub: @source_url
+      }
     ]
   end
 
