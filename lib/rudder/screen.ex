@@ -19,10 +19,10 @@ defmodule Rudder.Screen do
           user_id: String.t(),
           anonymous_id: String.t(),
           name: String.t(),
-          context: Map.t(),
-          integrations: Map.t(),
+          context: map(),
+          integrations: map(),
           timestamp: String.t() | nil,
-          properties: Map.t()
+          properties: map()
         }
 
   defimpl Rudder.Sendable do

@@ -39,7 +39,7 @@ See [Docs](https://www.rudderstack.com/docs/api/http-api/#5-identify)
 Rudder.track(client, %Rudder.Event{
   user_id: "123",
   name: "Item Sold",
-  properties: %{ revenue: 9.95, shipping: 'Free'}
+  properties: %{revenue: 9.95, shipping: 'Free'}
 })
 ```
 

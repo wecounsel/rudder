@@ -18,10 +18,10 @@ defmodule Rudder.Identity do
           type: String.t(),
           user_id: String.t(),
           anonymous_id: String.t(),
-          context: Map.t(),
-          integrations: Map.t(),
+          context: map(),
+          integrations: map(),
           timestamp: String.t() | nil,
-          traits: Map.t()
+          traits: map()
         }
 
   defimpl Rudder.Sendable do
