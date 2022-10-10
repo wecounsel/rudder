@@ -1,13 +1,30 @@
 defmodule Rudder.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/wecounsel/rudder"
+  @version "0.2.0"
+
   def project do
     [
       app: :rudder,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      package: package(),
+      deps: deps(),
+      docs: docs()
+    ]
+  end
+
+  def package do
+    [
+      description: "Elixir package for interacting with RudderStack HTTP API",
+      maintainers: ["Thomas Brewer", "Jason Soares"],
+      contributers: ["Thomas Brewer", "Jason Soares"],
+      licenses: ["MIT"],
+      links: %{
+        GitHub: @source_url
+      }
     ]
   end
 
@@ -31,6 +48,21 @@ defmodule Rudder.MixProject do
       {:dialyxir, ">= 0.0.0", only: [:dev], runtime: false},
       {:doctor, ">= 0.0.0", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: [:dev], runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      extras: [
+        "CHANGELOG.md",
+        LICENSE: [title: "License"],
+        "README.md": [title: "Readme"]
+      ],
+      main: "readme",
+      source_url: @source_url,
+      source_ref: "v#{@version}",
+      api_reference: false,
+      formatters: ["html"]
     ]
   end
 end

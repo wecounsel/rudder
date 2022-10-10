@@ -3,4 +3,6 @@ defmodule Rudder.Result do
   Result
   """
   defstruct success: false
+
+  @type t :: %__MODULE__{success: boolean()}
 end

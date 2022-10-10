@@ -1,18 +1,19 @@
-defmodule Rudder.Identity do
+defmodule Rudder.Group do
   @moduledoc """
-  Identity struct for making `identify` calls
+  Group struct for making `group` calls
   """
 
-  alias Rudder.{Identity, Request}
+  alias Rudder.{Group, Request}
 
   # type is needed for batch support.
-  defstruct type: "identify",
+  defstruct type: "group",
             user_id: "",
             anonymous_id: "",
             context: %{},
             integrations: %{},
-            timestamp: nil,
-            traits: %{}
+            group_id: "",
+            traits: %{},
+            timestamp: nil
 
   @type t :: %__MODULE__{
           type: String.t(),
@@ -20,20 +21,22 @@ defmodule Rudder.Identity do
           anonymous_id: String.t(),
           context: Map.t(),
           integrations: Map.t(),
-          timestamp: String.t() | nil,
-          traits: Map.t()
+          group_id: String.t(),
+          traits: Map.t(),
+          timestamp: String.t() | nil
         }
 
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{
-        type: Identity.__struct__().type,
+        type: Group.__struct__().type,
         userId: struct.user_id,
         anonymousId: struct.anonymous_id,
         context: struct.context |> Request.add_library(),
         integrations: struct.integrations,
-        timestamp: struct.timestamp || Request.default_timestamp(),
-        traits: struct.traits
+        groupId: struct.group_id,
+        traits: struct.traits,
+        timestamp: struct.timestamp || Request.default_timestamp()
       }
     end
   end

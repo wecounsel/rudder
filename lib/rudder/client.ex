@@ -8,6 +8,8 @@ defmodule Rudder.Client do
 
   defstruct write_key: "", data_plane_url: ""
 
+  @type t :: %__MODULE__{write_key: String.t(), data_plane_url: String.t()}
+
   def new(data_plane_url: _data_plane_url) do
     raise ArgumentError, "write_key is required"
   end
@@ -29,16 +31,15 @@ defmodule Rudder.Client do
   end
 
   def send(client, request) do
-    options = [
-      {"Content-Type", "application/json"},
-      hackney: [basic_auth: {client.write_key, ""}]
-    ]
+    headers = [{"Content-Type", "application/json"}]
+    options = [hackney: [basic_auth: {client.write_key, ""}]]
 
-    json = Jason.encode(request.params)
+    {:ok, json} = Jason.encode(request.params)
 
     case HTTPoison.post(
            api_url(client.data_plane_url, request.uri),
            json,
+           headers,
            options
          ) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->

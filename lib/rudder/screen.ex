@@ -1,42 +1,41 @@
-defmodule Rudder.Alias do
+defmodule Rudder.Screen do
   @moduledoc """
-  Alias struct for making `alias` calls
+  Screen struct for making `screen` calls
   """
 
-  alias Rudder.{Alias, Request}
+  alias Rudder.{Request, Screen}
 
-  # type is needed for batch support.
-  defstruct type: "alias",
+  defstruct type: "screen",
             user_id: "",
-            previous_id: "",
+            anonymous_id: "",
+            name: "",
             context: %{},
             integrations: %{},
             timestamp: nil,
-            properties: %{},
-            traits: %{}
+            properties: %{}
 
-  @type t :: %Alias{
+  @type t :: %__MODULE__{
           type: String.t(),
           user_id: String.t(),
-          previous_id: String.t(),
+          anonymous_id: String.t(),
+          name: String.t(),
           context: Map.t(),
           integrations: Map.t(),
           timestamp: String.t() | nil,
-          properties: Map.t(),
-          traits: Map.t()
+          properties: Map.t()
         }
 
   defimpl Rudder.Sendable do
     def map_parameters(struct) do
       %{
-        type: Alias.__struct__().type,
+        type: Screen.__struct__().type,
         userId: struct.user_id,
-        previousId: struct.previous_id,
+        anonymousId: struct.anonymous_id,
+        name: struct.name,
         context: struct.context |> Request.add_library(),
         integrations: struct.integrations,
         timestamp: struct.timestamp || Request.default_timestamp(),
-        properties: struct.properties,
-        traits: struct.traits
+        properties: struct.properties
       }
     end
   end
