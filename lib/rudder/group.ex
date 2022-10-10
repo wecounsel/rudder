@@ -19,10 +19,10 @@ defmodule Rudder.Group do
           type: String.t(),
           user_id: String.t(),
           anonymous_id: String.t(),
-          context: Map.t(),
-          integrations: Map.t(),
+          context: map(),
+          integrations: map(),
           group_id: String.t(),
-          traits: Map.t(),
+          traits: map(),
           timestamp: String.t() | nil
         }
 

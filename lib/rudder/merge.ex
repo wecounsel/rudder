@@ -10,7 +10,7 @@ defmodule Rudder.Merge do
   @type t :: %__MODULE__{
           user_id: String.t(),
           anonymous_id: String.t(),
-          merge_properties: List.t()
+          merge_properties: list()
         }
 
   defimpl Rudder.Sendable do

@@ -19,11 +19,11 @@ defmodule Rudder.Alias do
           type: String.t(),
           user_id: String.t(),
           previous_id: String.t(),
-          context: Map.t(),
-          integrations: Map.t(),
+          context: map(),
+          integrations: map(),
           timestamp: String.t() | nil,
-          properties: Map.t(),
-          traits: Map.t()
+          properties: map(),
+          traits: map()
         }
 
   defimpl Rudder.Sendable do
